@@ -1,129 +1,185 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JavaScript Methods Playground</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.13/lib/codemirror.css" />
+    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.13/lib/codemirror.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.13/mode/javascript/javascript.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.13/theme/material.css" />
     <style>
         body {
             font-family: 'Poppins', sans-serif;
             transition: background-color 0.3s, color 0.3s;
         }
+
         .method-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
+
         .dark .method-card {
             background-color: #2d3748;
             border-color: #4a5568;
         }
+
         .dark .method-card:hover {
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
         }
+
         .tab-active {
             border-bottom: 3px solid #3b82f6;
             font-weight: 600;
         }
+
         .dark .tab-active {
             border-bottom-color: #60a5fa;
         }
+
         .code-block {
             font-family: 'Courier New', Courier, monospace;
             background-color: #f3f4f6;
             border-radius: 0.375rem;
         }
+
         .dark .code-block {
             background-color: #1a202c;
             color: #e2e8f0;
         }
+
         .suggestion-item:hover {
             background-color: #e5e7eb;
         }
+
         .dark .suggestion-item:hover {
             background-color: #4a5568;
         }
+
         ::-webkit-scrollbar {
-  width: 8px;  /* Vertical */
-  height: 8px; /* Horizontal */
-}
+            width: 8px;
+            /* Vertical */
+            height: 8px;
+            /* Horizontal */
+        }
 
-/* Scrollbar track (background) */
-::-webkit-scrollbar-track {
-  background: transparent;
-}
+        /* Scrollbar track (background) */
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
 
-/* Scrollbar thumb (jo move hota hai) */
-::-webkit-scrollbar-thumb {
-  background-color: rgba(100, 100, 100, 0.4); /* soft gray thumb */
-  border-radius: 8px;
-  transition: background-color 0.3s;
-}
+        /* Scrollbar thumb (jo move hota hai) */
+        ::-webkit-scrollbar-thumb {
+            background-color: rgba(100, 100, 100, 0.4);
+            /* soft gray thumb */
+            border-radius: 8px;
+            transition: background-color 0.3s;
+        }
 
-::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(100, 100, 100, 0.6);
-}
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(100, 100, 100, 0.6);
+        }
+        .CodeMirror{
+            border-radius: 12px;
+            padding: 10px;
+        }
     </style>
 </head>
+
 <body class="bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200">
     <div class="container mx-auto px-4 py-8">
         <!-- Header -->
         <header class="flex justify-between items-center mb-8">
-            <h1 class="text-3xl font-bold text-blue-600 dark:text-blue-400">JS Methods Playground</h1>
+            <h1 class="text-xl font-bold text-blue-600 dark:text-blue-400" id="themeToggle">JS Methods Playground</h1>
             <div class="flex items-center space-x-4">
-                <button id="themeToggle" class="p-2 rounded-full bg-gray-200 dark:bg-gray-700">
-                    <i class="fas fa-moon dark:hidden"></i>
-                    <i class="fas fa-sun hidden dark:inline"></i>
-                </button>
+                <a href="https://arrowedge.netlify.app/">
+                    <span
+                        class="flex gap-2 p-3 items-center rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <svg fill="#ffffff" width="20" height="20" viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg" stroke="#ffffff">
+                            <path d="M3,10.714,21,3,13.286,21,12,12Z"></path>
+                        </svg>
+                        dev arrowedge
+                    </span>
+                </a>
             </div>
         </header>
 
         <!-- Search and Filter -->
         <div class="mb-8">
             <div class="relative">
-                <input type="text" id="searchInput" placeholder="Search methods..." 
-                       class="w-full p-4 pl-12 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <input type="text" id="searchInput" placeholder="Search methods..."
+                    class="w-full p-4 pl-12 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                <div id="searchSuggestions" class="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg shadow-lg hidden max-h-60 overflow-y-auto"></div>
+                <div id="searchSuggestions"
+                    class="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg shadow-lg hidden max-h-60 overflow-y-auto">
+                </div>
             </div>
             <div class="flex flex-wrap gap-2 mt-4">
-                <button class="filter-btn px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200" data-category="all">All</button>
-                <button class="filter-btn px-3 py-1 rounded-full bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200" data-category="string">String</button>
-                <button class="filter-btn px-3 py-1 rounded-full bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200" data-category="number">Number</button>
-                <button class="filter-btn px-3 py-1 rounded-full bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200" data-category="date">Date</button>
-                <button class="filter-btn px-3 py-1 rounded-full bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200" data-category="time">Time</button>
+                <button
+                    class="filter-btn px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200"
+                    data-category="all">All</button>
+                <button
+                    class="filter-btn px-3 py-1 rounded-full bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200"
+                    data-category="string">String</button>
+                <button
+                    class="filter-btn px-3 py-1 rounded-full bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200"
+                    data-category="number">Number</button>
+                <button
+                    class="filter-btn px-3 py-1 rounded-full bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200"
+                    data-category="date">Date</button>
+                <button
+                    class="filter-btn px-3 py-1 rounded-full bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200"
+                    data-category="time">Time</button>
             </div>
         </div>
 
         <!-- Tabs -->
         <div class="flex border-b border-gray-300 dark:border-gray-700 mb-6">
-            <button class="tab-btn px-4 py-2 mr-2 font-medium text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400" data-tab="string">String Methods</button>
-            <button class="tab-btn px-4 py-2 mr-2 font-medium text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400" data-tab="number">Number Methods</button>
-            <button class="tab-btn px-4 py-2 mr-2 font-medium text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400" data-tab="date">Date Methods</button>
-            <button class="tab-btn px-4 py-2 font-medium text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400" data-tab="time">Time Methods</button>
+            <button
+                class="tab-btn px-4 py-2 mr-2 font-medium text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
+                data-tab="string">String Methods</button>
+            <button
+                class="tab-btn px-4 py-2 mr-2 font-medium text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
+                data-tab="number">Number Methods</button>
+            <button
+                class="tab-btn px-4 py-2 mr-2 font-medium text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
+                data-tab="date">Date Methods</button>
+            <button
+                class="tab-btn px-4 py-2 font-medium text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
+                data-tab="time">Time Methods</button>
         </div>
 
         <!-- Playground Area -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Input and Output Section -->
+
             <div class="lg:col-span-2 space-y-6">
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
                     <h2 class="text-xl font-semibold mb-4">Code Playground</h2>
                     <div class="mb-4">
                         <label class="block text-sm font-medium mb-2">Enter your code:</label>
-                        <textarea id="codeInput" class="w-full h-32 p-3 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 code-block"></textarea>
+                        <textarea id="codeInput"
+                            class="w-full h-32 p-3 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 code-block"></textarea>
                     </div>
                     <div class="flex space-x-3">
-                        <button id="runCode" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition">Run Code</button>
-                        <button id="clearCode" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-lg transition">Clear</button>
+                        <button id="runCode"
+                            class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition">Run
+                            Code</button>
+                        <button id="clearCode"
+                            class="px-4 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-lg transition">Clear</button>
                     </div>
                 </div>
 
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
                     <h2 class="text-xl font-semibold mb-4">Output</h2>
-                    <div id="output" class="min-h-32 p-3 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-700 overflow-auto"></div>
+                    <div id="output"
+                        class="min-h-32 p-3 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-700 overflow-auto">
+                    </div>
                 </div>
             </div>
 
@@ -132,35 +188,35 @@
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
                     <h2 class="text-xl font-semibold mb-4">Available Methods</h2>
                     <div id="methodsList" class="space-y-4 max-h-screen overflow-y-auto pr-2">
-                        <!-- String Methods -->
+
                         <div class="category-section" data-category="string">
                             <h3 class="font-medium text-lg mb-3 text-green-600 dark:text-green-400">String Methods</h3>
                             <div class="space-y-3">
-                                <!-- String methods will be inserted here by JavaScript -->
+
                             </div>
                         </div>
 
-                        <!-- Number Methods -->
                         <div class="category-section" data-category="number">
-                            <h3 class="font-medium text-lg mb-3 text-purple-600 dark:text-purple-400">Number Methods</h3>
+                            <h3 class="font-medium text-lg mb-3 text-purple-600 dark:text-purple-400">Number Methods
+                            </h3>
                             <div class="space-y-3">
-                                <!-- Number methods will be inserted here by JavaScript -->
+
                             </div>
                         </div>
 
-                        <!-- Date Methods -->
+
                         <div class="category-section" data-category="date">
                             <h3 class="font-medium text-lg mb-3 text-yellow-600 dark:text-yellow-400">Date Methods</h3>
                             <div class="space-y-3">
-                                <!-- Date methods will be inserted here by JavaScript -->
+
                             </div>
                         </div>
 
-                        <!-- Time Methods -->
+
                         <div class="category-section" data-category="time">
                             <h3 class="font-medium text-lg mb-3 text-red-600 dark:text-red-400">Time Methods</h3>
                             <div class="space-y-3">
-                                <!-- Time methods will be inserted here by JavaScript -->
+
                             </div>
                         </div>
                     </div>
@@ -170,30 +226,30 @@
     </div>
 
     <script>
-        // Theme toggle
+
         const themeToggle = document.getElementById('themeToggle');
         themeToggle.addEventListener('click', () => {
             document.documentElement.classList.toggle('dark');
             localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
         });
 
-        // Check for saved theme preference
+
         if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
         }
 
-        // Tab functionality
+
         const tabButtons = document.querySelectorAll('.tab-btn');
         tabButtons.forEach(button => {
             button.addEventListener('click', () => {
                 tabButtons.forEach(btn => btn.classList.remove('tab-active'));
                 button.classList.add('tab-active');
-                
+
                 const tab = button.dataset.tab;
                 document.querySelectorAll('.category-section').forEach(section => {
                     section.style.display = 'none';
                 });
-                
+
                 if (tab === 'all') {
                     document.querySelectorAll('.category-section').forEach(section => {
                         section.style.display = 'block';
@@ -212,7 +268,7 @@
         filterButtons.forEach(button => {
             button.addEventListener('click', () => {
                 const category = button.dataset.category;
-                
+
                 if (category === 'all') {
                     document.querySelectorAll('.method-card').forEach(card => {
                         card.style.display = 'block';
@@ -225,12 +281,12 @@
                         card.style.display = 'block';
                     });
                 }
-                
+
                 // Update active filter button
                 filterButtons.forEach(btn => {
                     btn.classList.remove('bg-blue-600', 'text-white', 'dark:bg-blue-700');
                 });
-                
+
                 if (category !== 'all') {
                     button.classList.add('bg-blue-600', 'text-white', 'dark:bg-blue-700');
                 }
@@ -240,26 +296,26 @@
         // Search functionality
         const searchInput = document.getElementById('searchInput');
         const searchSuggestions = document.getElementById('searchSuggestions');
-        
+
         searchInput.addEventListener('input', () => {
             const query = searchInput.value.toLowerCase();
-            
+
             if (query.length === 0) {
                 searchSuggestions.classList.add('hidden');
                 return;
             }
-            
-            const filteredMethods = allMethods.filter(method => 
-                method.name.toLowerCase().includes(query) || 
+
+            const filteredMethods = allMethods.filter(method =>
+                method.name.toLowerCase().includes(query) ||
                 method.description.toLowerCase().includes(query)
             );
-            
+
             if (filteredMethods.length === 0) {
                 searchSuggestions.innerHTML = '<div class="p-3 text-gray-500">No methods found</div>';
                 searchSuggestions.classList.remove('hidden');
                 return;
             }
-            
+
             searchSuggestions.innerHTML = '';
             filteredMethods.forEach(method => {
                 const suggestionItem = document.createElement('div');
@@ -277,39 +333,39 @@
                         <div class="text-sm text-gray-500 dark:text-gray-400">${method.description}</div>
                     </div>
                 `;
-                
+
                 suggestionItem.addEventListener('click', () => {
                     searchInput.value = method.name;
                     searchSuggestions.classList.add('hidden');
-                    
+
                     // Show the method details
                     document.querySelectorAll('.method-card').forEach(card => {
                         card.style.display = 'none';
                     });
-                    
+
                     const methodCard = document.querySelector(`.method-card[data-method="${method.name}"]`);
                     if (methodCard) {
                         methodCard.style.display = 'block';
                         methodCard.scrollIntoView({ behavior: 'smooth' });
                     }
-                    
+
                     // Update active filter button
                     filterButtons.forEach(btn => {
                         btn.classList.remove('bg-blue-600', 'text-white', 'dark:bg-blue-700');
                     });
-                    
+
                     const filterBtn = document.querySelector(`.filter-btn[data-category="${method.category}"]`);
                     if (filterBtn) {
                         filterBtn.classList.add('bg-blue-600', 'text-white', 'dark:bg-blue-700');
                     }
                 });
-                
+
                 searchSuggestions.appendChild(suggestionItem);
             });
-            
+
             searchSuggestions.classList.remove('hidden');
         });
-        
+
         // Close suggestions when clicking outside
         document.addEventListener('click', (e) => {
             if (!searchInput.contains(e.target) && !searchSuggestions.contains(e.target)) {
@@ -318,37 +374,37 @@
         });
 
         // Run code functionality
+       
         const runCodeBtn = document.getElementById('runCode');
         const clearCodeBtn = document.getElementById('clearCode');
         const codeInput = document.getElementById('codeInput');
         const outputDiv = document.getElementById('output');
-        
         runCodeBtn.addEventListener('click', () => {
             try {
-                const code = codeInput.value;
+                const code = editor.getValue();
                 let result = '';
-                
+
                 // Capture console.log outputs
                 const originalConsoleLog = console.log;
-                console.log = function() {
+                console.log = function () {
                     for (let i = 0; i < arguments.length; i++) {
                         result += JSON.stringify(arguments[i], null, 2) + '\n';
                     }
                     originalConsoleLog.apply(console, arguments);
                 };
-                
+
                 // Evaluate the code
                 eval(code);
-                
+
                 // Restore original console.log
                 console.log = originalConsoleLog;
-                
+
                 outputDiv.textContent = result || 'Code executed successfully (no output)';
             } catch (error) {
                 outputDiv.textContent = `Error: ${error.message}`;
             }
         });
-        
+
         clearCodeBtn.addEventListener('click', () => {
             codeInput.value = '';
             outputDiv.textContent = '';
@@ -546,7 +602,7 @@
                 parameters: 'None',
                 returnValue: 'A new string with whitespace removed from the start.'
             },
-            
+
             // Number Methods
             {
                 name: 'isNaN()',
@@ -629,7 +685,7 @@
                 parameters: 'None',
                 returnValue: 'The primitive value of the Number object.'
             },
-            
+
             // Date Methods
             {
                 name: 'getDate()',
@@ -883,7 +939,7 @@
                 parameters: 'None',
                 returnValue: 'The number of milliseconds since January 1, 1970, 00:00:00 UTC.'
             },
-            
+
             // Time Methods (these are actually Date methods but grouped separately for organization)
             {
                 name: 'getHours()',
@@ -997,13 +1053,13 @@
 
         // Populate methods list
         const methodsListContainer = document.getElementById('methodsList');
-        
+
         allMethods.forEach(method => {
             const methodCard = document.createElement('div');
             methodCard.className = 'method-card p-4 border rounded-lg bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 transition duration-300 cursor-pointer';
             methodCard.dataset.method = method.name;
             methodCard.dataset.category = method.category;
-            
+
             methodCard.innerHTML = `
                 <div class="items-start flex-wrap overflow-auto">
                     <span class="w-8 h-8 mb-2 mt-o rounded-full flex items-center justify-center mr-3 
@@ -1032,11 +1088,11 @@
                     </div>
                 </div>
             `;
-            
+
             methodCard.addEventListener('click', () => {
-                codeInput.value = method.example;
+                editor.setValue(method.example);
             });
-            
+
             // Add to the appropriate category section
             const categorySection = methodsListContainer.querySelector(`.category-section[data-category="${method.category}"]`);
             if (categorySection) {
@@ -1046,6 +1102,17 @@
 
         // Initialize with first tab content visible
         document.querySelector('.category-section[data-category="string"]').style.display = 'block';
+        let editor;
+
+        window.addEventListener("DOMContentLoaded", () => {
+            editor = CodeMirror.fromTextArea(document.getElementById("codeInput"), {
+                mode: "javascript",
+                theme: "material",
+                lineNumbers: true,
+            });
+        });
     </script>
+
 </body>
+
 </html>
