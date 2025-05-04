@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript Methods Playground</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .method-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        .dark .method-card {
+            background-color: #2d3748;
+            border-color: #4a5568;
+        }
+        .dark .method-card:hover {
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+        .tab-active {
+            border-bottom: 3px solid #3b82f6;
+            font-weight: 600;
+        }
+        .dark .tab-active {
+            border-bottom-color: #60a5fa;
+        }
+        .code-block {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #f3f4f6;
+            border-radius: 0.375rem;
+        }
+        .dark .code-block {
+            background-color: #1a202c;
+            color: #e2e8f0;
+        }
+        .suggestion-item:hover {
+            background-color: #e5e7eb;
+        }
+        .dark .suggestion-item:hover {
+            background-color: #4a5568;
+        }
+        ::-webkit-scrollbar {
+  width: 8px;  /* Vertical */
+  height: 8px; /* Horizontal */
+}
+
+/* Scrollbar track (background) */
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Scrollbar thumb (jo move hota hai) */
+::-webkit-scrollbar-thumb {
+  background-color: rgba(100, 100, 100, 0.4); /* soft gray thumb */
+  border-radius: 8px;
+  transition: background-color 0.3s;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(100, 100, 100, 0.6);
+}
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <header class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-bold text-blue-600 dark:text-blue-400">JS Methods Playground</h1>
+            <div class="flex items-center space-x-4">
+                <button id="themeToggle" class="p-2 rounded-full bg-gray-200 dark:bg-gray-700">
+                    <i class="fas fa-moon dark:hidden"></i>
+                    <i class="fas fa-sun hidden dark:inline"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Search and Filter -->
+        <div class="mb-8">
+            <div class="relative">
+                <input type="text" id="searchInput" placeholder="Search methods..." 
+                       class="w-full p-4 pl-12 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                <div id="searchSuggestions" class="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg shadow-lg hidden max-h-60 overflow-y-auto"></div>
+            </div>
+            <div class="flex flex-wrap gap-2 mt-4">
+                <button class="filter-btn px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200" data-category="all">All</button>
+                <button class="filter-btn px-3 py-1 rounded-full bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200" data-category="string">String</button>
+                <button class="filter-btn px-3 py-1 rounded-full bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200" data-category="number">Number</button>
+                <button class="filter-btn px-3 py-1 rounded-full bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200" data-category="date">Date</button>
+                <button class="filter-btn px-3 py-1 rounded-full bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200" data-category="time">Time</button>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="flex border-b border-gray-300 dark:border-gray-700 mb-6">
+            <button class="tab-btn px-4 py-2 mr-2 font-medium text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400" data-tab="string">String Methods</button>
+            <button class="tab-btn px-4 py-2 mr-2 font-medium text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400" data-tab="number">Number Methods</button>
+            <button class="tab-btn px-4 py-2 mr-2 font-medium text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400" data-tab="date">Date Methods</button>
+            <button class="tab-btn px-4 py-2 font-medium text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400" data-tab="time">Time Methods</button>
+        </div>
+
+        <!-- Playground Area -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Input and Output Section -->
+            <div class="lg:col-span-2 space-y-6">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                    <h2 class="text-xl font-semibold mb-4">Code Playground</h2>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-2">Enter your code:</label>
+                        <textarea id="codeInput" class="w-full h-32 p-3 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 code-block"></textarea>
+                    </div>
+                    <div class="flex space-x-3">
+                        <button id="runCode" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition">Run Code</button>
+                        <button id="clearCode" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-lg transition">Clear</button>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                    <h2 class="text-xl font-semibold mb-4">Output</h2>
+                    <div id="output" class="min-h-32 p-3 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-700 overflow-auto"></div>
+                </div>
+            </div>
+
+            <!-- Methods List Section -->
+            <div class="space-y-6">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                    <h2 class="text-xl font-semibold mb-4">Available Methods</h2>
+                    <div id="methodsList" class="space-y-4 max-h-screen overflow-y-auto pr-2">
+                        <!-- String Methods -->
+                        <div class="category-section" data-category="string">
+                            <h3 class="font-medium text-lg mb-3 text-green-600 dark:text-green-400">String Methods</h3>
+                            <div class="space-y-3">
+                                <!-- String methods will be inserted here by JavaScript -->
+                            </div>
+                        </div>
+
+                        <!-- Number Methods -->
+                        <div class="category-section" data-category="number">
+                            <h3 class="font-medium text-lg mb-3 text-purple-600 dark:text-purple-400">Number Methods</h3>
+                            <div class="space-y-3">
+                                <!-- Number methods will be inserted here by JavaScript -->
+                            </div>
+                        </div>
+
+                        <!-- Date Methods -->
+                        <div class="category-section" data-category="date">
+                            <h3 class="font-medium text-lg mb-3 text-yellow-600 dark:text-yellow-400">Date Methods</h3>
+                            <div class="space-y-3">
+                                <!-- Date methods will be inserted here by JavaScript -->
+                            </div>
+                        </div>
+
+                        <!-- Time Methods -->
+                        <div class="category-section" data-category="time">
+                            <h3 class="font-medium text-lg mb-3 text-red-600 dark:text-red-400">Time Methods</h3>
+                            <div class="space-y-3">
+                                <!-- Time methods will be inserted here by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Theme toggle
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+        });
+
+        // Check for saved theme preference
+        if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        }
+
+        // Tab functionality
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                tabButtons.forEach(btn => btn.classList.remove('tab-active'));
+                button.classList.add('tab-active');
+                
+                const tab = button.dataset.tab;
+                document.querySelectorAll('.category-section').forEach(section => {
+                    section.style.display = 'none';
+                });
+                
+                if (tab === 'all') {
+                    document.querySelectorAll('.category-section').forEach(section => {
+                        section.style.display = 'block';
+                    });
+                } else {
+                    document.querySelector(`.category-section[data-category="${tab}"]`).style.display = 'block';
+                }
+            });
+        });
+
+        // Set first tab as active by default
+        tabButtons[0].classList.add('tab-active');
+
+        // Filter buttons
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        filterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const category = button.dataset.category;
+                
+                if (category === 'all') {
+                    document.querySelectorAll('.method-card').forEach(card => {
+                        card.style.display = 'block';
+                    });
+                } else {
+                    document.querySelectorAll('.method-card').forEach(card => {
+                        card.style.display = 'none';
+                    });
+                    document.querySelectorAll(`.method-card[data-category="${category}"]`).forEach(card => {
+                        card.style.display = 'block';
+                    });
+                }
+                
+                // Update active filter button
+                filterButtons.forEach(btn => {
+                    btn.classList.remove('bg-blue-600', 'text-white', 'dark:bg-blue-700');
+                });
+                
+                if (category !== 'all') {
+                    button.classList.add('bg-blue-600', 'text-white', 'dark:bg-blue-700');
+                }
+            });
+        });
+
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        const searchSuggestions = document.getElementById('searchSuggestions');
+        
+        searchInput.addEventListener('input', () => {
+            const query = searchInput.value.toLowerCase();
+            
+            if (query.length === 0) {
+                searchSuggestions.classList.add('hidden');
+                return;
+            }
+            
+            const filteredMethods = allMethods.filter(method => 
+                method.name.toLowerCase().includes(query) || 
+                method.description.toLowerCase().includes(query)
+            );
+            
+            if (filteredMethods.length === 0) {
+                searchSuggestions.innerHTML = '<div class="p-3 text-gray-500">No methods found</div>';
+                searchSuggestions.classList.remove('hidden');
+                return;
+            }
+            
+            searchSuggestions.innerHTML = '';
+            filteredMethods.forEach(method => {
+                const suggestionItem = document.createElement('div');
+                suggestionItem.className = 'suggestion-item p-3 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer flex items-center';
+                suggestionItem.innerHTML = `
+                    <span class="w-8 h-8 rounded-full flex items-center justify-center mr-3 
+                        ${method.category === 'string' ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' : ''}
+                        ${method.category === 'number' ? 'bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200' : ''}
+                        ${method.category === 'date' ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200' : ''}
+                        ${method.category === 'time' ? 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200' : ''}">
+                        ${method.category.charAt(0).toUpperCase()}
+                    </span>
+                    <div>
+                        <div class="font-medium">${method.name}</div>
+                        <div class="text-sm text-gray-500 dark:text-gray-400">${method.description}</div>
+                    </div>
+                `;
+                
+                suggestionItem.addEventListener('click', () => {
+                    searchInput.value = method.name;
+                    searchSuggestions.classList.add('hidden');
+                    
+                    // Show the method details
+                    document.querySelectorAll('.method-card').forEach(card => {
+                        card.style.display = 'none';
+                    });
+                    
+                    const methodCard = document.querySelector(`.method-card[data-method="${method.name}"]`);
+                    if (methodCard) {
+                        methodCard.style.display = 'block';
+                        methodCard.scrollIntoView({ behavior: 'smooth' });
+                    }
+                    
+                    // Update active filter button
+                    filterButtons.forEach(btn => {
+                        btn.classList.remove('bg-blue-600', 'text-white', 'dark:bg-blue-700');
+                    });
+                    
+                    const filterBtn = document.querySelector(`.filter-btn[data-category="${method.category}"]`);
+                    if (filterBtn) {
+                        filterBtn.classList.add('bg-blue-600', 'text-white', 'dark:bg-blue-700');
+                    }
+                });
+                
+                searchSuggestions.appendChild(suggestionItem);
+            });
+            
+            searchSuggestions.classList.remove('hidden');
+        });
+        
+        // Close suggestions when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!searchInput.contains(e.target) && !searchSuggestions.contains(e.target)) {
+                searchSuggestions.classList.add('hidden');
+            }
+        });
+
+        // Run code functionality
+        const runCodeBtn = document.getElementById('runCode');
+        const clearCodeBtn = document.getElementById('clearCode');
+        const codeInput = document.getElementById('codeInput');
+        const outputDiv = document.getElementById('output');
+        
+        runCodeBtn.addEventListener('click', () => {
+            try {
+                const code = codeInput.value;
+                let result = '';
+                
+                // Capture console.log outputs
+                const originalConsoleLog = console.log;
+                console.log = function() {
+                    for (let i = 0; i < arguments.length; i++) {
+                        result += JSON.stringify(arguments[i], null, 2) + '\n';
+                    }
+                    originalConsoleLog.apply(console, arguments);
+                };
+                
+                // Evaluate the code
+                eval(code);
+                
+                // Restore original console.log
+                console.log = originalConsoleLog;
+                
+                outputDiv.textContent = result || 'Code executed successfully (no output)';
+            } catch (error) {
+                outputDiv.textContent = `Error: ${error.message}`;
+            }
+        });
+        
+        clearCodeBtn.addEventListener('click', () => {
+            codeInput.value = '';
+            outputDiv.textContent = '';
+        });
+
+        // Method data
+        const allMethods = [
+            // String Methods
+            {
+                name: 'charAt()',
+                category: 'string',
+                description: 'Returns the character at the specified index.',
+                syntax: 'string.charAt(index)',
+                example: `const str = 'Hello';\nconsole.log(str.charAt(1)); // 'e'`,
+                parameters: 'index: The index of the character to return (0-based).',
+                returnValue: 'The character at the specified index, or an empty string if index is out of range.'
+            },
+            {
+                name: 'concat()',
+                category: 'string',
+                description: 'Combines two or more strings and returns a new string.',
+                syntax: 'string.concat(string2, string3, ..., stringN)',
+                example: `const str1 = 'Hello';\nconst str2 = 'World';\nconsole.log(str1.concat(' ', str2)); // 'Hello World'`,
+                parameters: 'string2, string3, ..., stringN: Strings to concatenate.',
+                returnValue: 'A new string containing the combined text.'
+            },
+            {
+                name: 'includes()',
+                category: 'string',
+                description: 'Determines whether a string contains the specified substring.',
+                syntax: 'string.includes(searchString, position)',
+                example: `const str = 'Hello world';\nconsole.log(str.includes('world')); // true`,
+                parameters: 'searchString: The substring to search for. position: Optional, the position to start searching from.',
+                returnValue: 'true if the string contains the substring, false otherwise.'
+            },
+            {
+                name: 'endsWith()',
+                category: 'string',
+                description: 'Determines whether a string ends with the specified substring.',
+                syntax: 'string.endsWith(searchString, length)',
+                example: `const str = 'Hello world';\nconsole.log(str.endsWith('world')); // true`,
+                parameters: 'searchString: The substring to search for. length: Optional, the length of the string to consider.',
+                returnValue: 'true if the string ends with the substring, false otherwise.'
+            },
+            {
+                name: 'indexOf()',
+                category: 'string',
+                description: 'Returns the index of the first occurrence of a substring.',
+                syntax: 'string.indexOf(searchValue, fromIndex)',
+                example: `const str = 'Hello world';\nconsole.log(str.indexOf('o')); // 4`,
+                parameters: 'searchValue: The substring to search for. fromIndex: Optional, the index to start searching from.',
+                returnValue: 'The index of the first occurrence, or -1 if not found.'
+            },
+            {
+                name: 'lastIndexOf()',
+                category: 'string',
+                description: 'Returns the index of the last occurrence of a substring.',
+                syntax: 'string.lastIndexOf(searchValue, fromIndex)',
+                example: `const str = 'Hello world';\nconsole.log(str.lastIndexOf('o')); // 7`,
+                parameters: 'searchValue: The substring to search for. fromIndex: Optional, the index to start searching from.',
+                returnValue: 'The index of the last occurrence, or -1 if not found.'
+            },
+            {
+                name: 'match()',
+                category: 'string',
+                description: 'Retrieves the matches when matching a string against a regular expression.',
+                syntax: 'string.match(regexp)',
+                example: `const str = 'The rain in SPAIN stays mainly in the plain';\nconsole.log(str.match(/ain/g)); // ['ain', 'ain', 'ain']`,
+                parameters: 'regexp: A regular expression object.',
+                returnValue: 'An array containing the matches, or null if no matches are found.'
+            },
+            {
+                name: 'padEnd()',
+                category: 'string',
+                description: 'Pads the current string with a given string until the resulting string reaches the given length.',
+                syntax: 'string.padEnd(targetLength, padString)',
+                example: `const str = 'Hello';\nconsole.log(str.padEnd(10, '.')); // 'Hello.....'`,
+                parameters: 'targetLength: The length of the resulting string. padString: Optional, the string to pad with (default is space).',
+                returnValue: 'A new string of the specified length with padding applied at the end.'
+            },
+            {
+                name: 'padStart()',
+                category: 'string',
+                description: 'Pads the current string with a given string until the resulting string reaches the given length.',
+                syntax: 'string.padStart(targetLength, padString)',
+                example: `const str = 'Hello';\nconsole.log(str.padStart(10, '.')); // '.....Hello'`,
+                parameters: 'targetLength: The length of the resulting string. padString: Optional, the string to pad with (default is space).',
+                returnValue: 'A new string of the specified length with padding applied at the start.'
+            },
+            {
+                name: 'repeat()',
+                category: 'string',
+                description: 'Returns a new string with a specified number of copies of the original string.',
+                syntax: 'string.repeat(count)',
+                example: `const str = 'Hello';\nconsole.log(str.repeat(3)); // 'HelloHelloHello'`,
+                parameters: 'count: The number of times to repeat the string.',
+                returnValue: 'A new string containing the specified number of copies.'
+            },
+            {
+                name: 'replace()',
+                category: 'string',
+                description: 'Replaces occurrences of a substring or pattern with a replacement.',
+                syntax: 'string.replace(searchValue, replaceValue)',
+                example: `const str = 'Hello world';\nconsole.log(str.replace('world', 'there')); // 'Hello there'`,
+                parameters: 'searchValue: The substring or regex to replace. replaceValue: The new substring.',
+                returnValue: 'A new string with some or all matches replaced.'
+            },
+            {
+                name: 'search()',
+                category: 'string',
+                description: 'Executes a search for a match between a regular expression and the string.',
+                syntax: 'string.search(regexp)',
+                example: `const str = 'Hello world';\nconsole.log(str.search(/world/)); // 6`,
+                parameters: 'regexp: A regular expression object.',
+                returnValue: 'The index of the first match, or -1 if not found.'
+            },
+            {
+                name: 'slice()',
+                category: 'string',
+                description: 'Extracts a section of a string and returns it as a new string.',
+                syntax: 'string.slice(beginIndex, endIndex)',
+                example: `const str = 'Hello world';\nconsole.log(str.slice(0, 5)); // 'Hello'`,
+                parameters: 'beginIndex: The index to start extraction. endIndex: Optional, the index to end extraction.',
+                returnValue: 'A new string containing the extracted section.'
+            },
+            {
+                name: 'split()',
+                category: 'string',
+                description: 'Splits a string into an array of substrings.',
+                syntax: 'string.split(separator, limit)',
+                example: `const str = 'Hello world';\nconsole.log(str.split(' ')); // ['Hello', 'world']`,
+                parameters: 'separator: The string or regex to use for splitting. limit: Optional, the maximum number of splits.',
+                returnValue: 'An array of strings split at each occurrence of the separator.'
+            },
+            {
+                name: 'startsWith()',
+                category: 'string',
+                description: 'Determines whether a string begins with the specified substring.',
+                syntax: 'string.startsWith(searchString, position)',
+                example: `const str = 'Hello world';\nconsole.log(str.startsWith('Hello')); // true`,
+                parameters: 'searchString: The substring to search for. position: Optional, the position to start searching from.',
+                returnValue: 'true if the string starts with the substring, false otherwise.'
+            },
+            {
+                name: 'substring()',
+                category: 'string',
+                description: 'Returns a subset of a string between one index and another.',
+                syntax: 'string.substring(indexStart, indexEnd)',
+                example: `const str = 'Hello world';\nconsole.log(str.substring(0, 5)); // 'Hello'`,
+                parameters: 'indexStart: The index to start extraction. indexEnd: Optional, the index to end extraction.',
+                returnValue: 'A new string containing the specified part of the original string.'
+            },
+            {
+                name: 'toLowerCase()',
+                category: 'string',
+                description: 'Converts a string to lowercase letters.',
+                syntax: 'string.toLowerCase()',
+                example: `const str = 'Hello World';\nconsole.log(str.toLowerCase()); // 'hello world'`,
+                parameters: 'None',
+                returnValue: 'A new string converted to lowercase.'
+            },
+            {
+                name: 'toUpperCase()',
+                category: 'string',
+                description: 'Converts a string to uppercase letters.',
+                syntax: 'string.toUpperCase()',
+                example: `const str = 'Hello World';\nconsole.log(str.toUpperCase()); // 'HELLO WORLD'`,
+                parameters: 'None',
+                returnValue: 'A new string converted to uppercase.'
+            },
+            {
+                name: 'trim()',
+                category: 'string',
+                description: 'Removes whitespace from both ends of a string.',
+                syntax: 'string.trim()',
+                example: `const str = '   Hello world   ';\nconsole.log(str.trim()); // 'Hello world'`,
+                parameters: 'None',
+                returnValue: 'A new string with whitespace removed from both ends.'
+            },
+            {
+                name: 'trimEnd()',
+                category: 'string',
+                description: 'Removes whitespace from the end of a string.',
+                syntax: 'string.trimEnd()',
+                example: `const str = '   Hello world   ';\nconsole.log(str.trimEnd()); // '   Hello world'`,
+                parameters: 'None',
+                returnValue: 'A new string with whitespace removed from the end.'
+            },
+            {
+                name: 'trimStart()',
+                category: 'string',
+                description: 'Removes whitespace from the start of a string.',
+                syntax: 'string.trimStart()',
+                example: `const str = '   Hello world   ';\nconsole.log(str.trimStart()); // 'Hello world   '`,
+                parameters: 'None',
+                returnValue: 'A new string with whitespace removed from the start.'
+            },
+            
+            // Number Methods
+            {
+                name: 'isNaN()',
+                category: 'number',
+                description: 'Determines whether a value is NaN (Not-a-Number).',
+                syntax: 'Number.isNaN(value)',
+                example: `console.log(Number.isNaN(NaN)); // true\nconsole.log(Number.isNaN('Hello')); // false`,
+                parameters: 'value: The value to be tested.',
+                returnValue: 'true if the value is NaN, false otherwise.'
+            },
+            {
+                name: 'isFinite()',
+                category: 'number',
+                description: 'Determines whether a value is a finite number.',
+                syntax: 'Number.isFinite(value)',
+                example: `console.log(Number.isFinite(123)); // true\nconsole.log(Number.isFinite(Infinity)); // false`,
+                parameters: 'value: The value to be tested.',
+                returnValue: 'true if the value is a finite number, false otherwise.'
+            },
+            {
+                name: 'isInteger()',
+                category: 'number',
+                description: 'Determines whether a value is an integer.',
+                syntax: 'Number.isInteger(value)',
+                example: `console.log(Number.isInteger(123)); // true\nconsole.log(Number.isInteger(123.5)); // false`,
+                parameters: 'value: The value to be tested.',
+                returnValue: 'true if the value is an integer, false otherwise.'
+            },
+            {
+                name: 'parseFloat()',
+                category: 'number',
+                description: 'Parses a string and returns a floating point number.',
+                syntax: 'Number.parseFloat(string)',
+                example: `console.log(Number.parseFloat('123.45')); // 123.45`,
+                parameters: 'string: The string to parse.',
+                returnValue: 'A floating point number parsed from the string, or NaN if not parseable.'
+            },
+            {
+                name: 'parseInt()',
+                category: 'number',
+                description: 'Parses a string and returns an integer.',
+                syntax: 'Number.parseInt(string, radix)',
+                example: `console.log(Number.parseInt('1010', 2)); // 10 (binary to decimal)`,
+                parameters: 'string: The string to parse. radix: Optional, the base of the numeral system (2-36).',
+                returnValue: 'An integer parsed from the string, or NaN if not parseable.'
+            },
+            {
+                name: 'toFixed()',
+                category: 'number',
+                description: 'Formats a number using fixed-point notation.',
+                syntax: 'number.toFixed(digits)',
+                example: `const num = 123.456;\nconsole.log(num.toFixed(2)); // '123.46'`,
+                parameters: 'digits: The number of digits to appear after the decimal point.',
+                returnValue: 'A string representing the number in fixed-point notation.'
+            },
+            {
+                name: 'toPrecision()',
+                category: 'number',
+                description: 'Formats a number to a specified precision.',
+                syntax: 'number.toPrecision(precision)',
+                example: `const num = 123.456;\nconsole.log(num.toPrecision(4)); // '123.5'`,
+                parameters: 'precision: The number of significant digits.',
+                returnValue: 'A string representing the number to the specified precision.'
+            },
+            {
+                name: 'toString()',
+                category: 'number',
+                description: 'Returns a string representing the number.',
+                syntax: 'number.toString(radix)',
+                example: `const num = 10;\nconsole.log(num.toString(2)); // '1010' (binary)`,
+                parameters: 'radix: Optional, the base of the numeral system (2-36).',
+                returnValue: 'A string representing the number.'
+            },
+            {
+                name: 'valueOf()',
+                category: 'number',
+                description: 'Returns the primitive value of a Number object.',
+                syntax: 'number.valueOf()',
+                example: `const numObj = new Number(123);\nconsole.log(numObj.valueOf()); // 123`,
+                parameters: 'None',
+                returnValue: 'The primitive value of the Number object.'
+            },
+            
+            // Date Methods
+            {
+                name: 'getDate()',
+                category: 'date',
+                description: 'Returns the day of the month (1-31) for the specified date.',
+                syntax: 'date.getDate()',
+                example: `const date = new Date();\nconsole.log(date.getDate()); // Current day of month`,
+                parameters: 'None',
+                returnValue: 'The day of the month (1-31).'
+            },
+            {
+                name: 'getDay()',
+                category: 'date',
+                description: 'Returns the day of the week (0-6) for the specified date.',
+                syntax: 'date.getDay()',
+                example: `const date = new Date();\nconsole.log(date.getDay()); // Current day of week (0=Sunday)`,
+                parameters: 'None',
+                returnValue: 'The day of the week (0-6).'
+            },
+            {
+                name: 'getFullYear()',
+                category: 'date',
+                description: 'Returns the year (4 digits) of the specified date.',
+                syntax: 'date.getFullYear()',
+                example: `const date = new Date();\nconsole.log(date.getFullYear()); // Current year`,
+                parameters: 'None',
+                returnValue: 'The year (4 digits).'
+            },
+            {
+                name: 'getHours()',
+                category: 'date',
+                description: 'Returns the hour (0-23) of the specified date.',
+                syntax: 'date.getHours()',
+                example: `const date = new Date();\nconsole.log(date.getHours()); // Current hour`,
+                parameters: 'None',
+                returnValue: 'The hour (0-23).'
+            },
+            {
+                name: 'getMilliseconds()',
+                category: 'date',
+                description: 'Returns the milliseconds (0-999) of the specified date.',
+                syntax: 'date.getMilliseconds()',
+                example: `const date = new Date();\nconsole.log(date.getMilliseconds()); // Current milliseconds`,
+                parameters: 'None',
+                returnValue: 'The milliseconds (0-999).'
+            },
+            {
+                name: 'getMinutes()',
+                category: 'date',
+                description: 'Returns the minutes (0-59) of the specified date.',
+                syntax: 'date.getMinutes()',
+                example: `const date = new Date();\nconsole.log(date.getMinutes()); // Current minutes`,
+                parameters: 'None',
+                returnValue: 'The minutes (0-59).'
+            },
+            {
+                name: 'getMonth()',
+                category: 'date',
+                description: 'Returns the month (0-11) of the specified date.',
+                syntax: 'date.getMonth()',
+                example: `const date = new Date();\nconsole.log(date.getMonth()); // Current month (0=January)`,
+                parameters: 'None',
+                returnValue: 'The month (0-11).'
+            },
+            {
+                name: 'getSeconds()',
+                category: 'date',
+                description: 'Returns the seconds (0-59) of the specified date.',
+                syntax: 'date.getSeconds()',
+                example: `const date = new Date();\nconsole.log(date.getSeconds()); // Current seconds`,
+                parameters: 'None',
+                returnValue: 'The seconds (0-59).'
+            },
+            {
+                name: 'getTime()',
+                category: 'date',
+                description: 'Returns the numeric value of the specified date as milliseconds since January 1, 1970.',
+                syntax: 'date.getTime()',
+                example: `const date = new Date();\nconsole.log(date.getTime()); // Timestamp in milliseconds`,
+                parameters: 'None',
+                returnValue: 'The number of milliseconds since January 1, 1970, 00:00:00 UTC.'
+            },
+            {
+                name: 'setDate()',
+                category: 'date',
+                description: 'Sets the day of the month for a specified date.',
+                syntax: 'date.setDate(day)',
+                example: `const date = new Date();\ndate.setDate(15);\nconsole.log(date.getDate()); // 15`,
+                parameters: 'day: An integer representing the day of the month (1-31).',
+                returnValue: 'The number of milliseconds between January 1, 1970 and the updated date.'
+            },
+            {
+                name: 'setFullYear()',
+                category: 'date',
+                description: 'Sets the full year for a specified date.',
+                syntax: 'date.setFullYear(year, month, day)',
+                example: `const date = new Date();\ndate.setFullYear(2020);\nconsole.log(date.getFullYear()); // 2020`,
+                parameters: 'year: 4-digit year. month: Optional (0-11). day: Optional (1-31).',
+                returnValue: 'The number of milliseconds between January 1, 1970 and the updated date.'
+            },
+            {
+                name: 'setHours()',
+                category: 'date',
+                description: 'Sets the hours for a specified date.',
+                syntax: 'date.setHours(hours, minutes, seconds, ms)',
+                example: `const date = new Date();\ndate.setHours(12);\nconsole.log(date.getHours()); // 12`,
+                parameters: 'hours: (0-23). minutes, seconds, ms: Optional.',
+                returnValue: 'The number of milliseconds between January 1, 1970 and the updated date.'
+            },
+            {
+                name: 'setMilliseconds()',
+                category: 'date',
+                description: 'Sets the milliseconds for a specified date.',
+                syntax: 'date.setMilliseconds(ms)',
+                example: `const date = new Date();\ndate.setMilliseconds(500);\nconsole.log(date.getMilliseconds()); // 500`,
+                parameters: 'ms: (0-999).',
+                returnValue: 'The number of milliseconds between January 1, 1970 and the updated date.'
+            },
+            {
+                name: 'setMinutes()',
+                category: 'date',
+                description: 'Sets the minutes for a specified date.',
+                syntax: 'date.setMinutes(minutes, seconds, ms)',
+                example: `const date = new Date();\ndate.setMinutes(30);\nconsole.log(date.getMinutes()); // 30`,
+                parameters: 'minutes: (0-59). seconds, ms: Optional.',
+                returnValue: 'The number of milliseconds between January 1, 1970 and the updated date.'
+            },
+            {
+                name: 'setMonth()',
+                category: 'date',
+                description: 'Sets the month for a specified date.',
+                syntax: 'date.setMonth(month, day)',
+                example: `const date = new Date();\ndate.setMonth(5); // June (0=January)\nconsole.log(date.getMonth()); // 5`,
+                parameters: 'month: (0-11). day: Optional (1-31).',
+                returnValue: 'The number of milliseconds between January 1, 1970 and the updated date.'
+            },
+            {
+                name: 'setSeconds()',
+                category: 'date',
+                description: 'Sets the seconds for a specified date.',
+                syntax: 'date.setSeconds(seconds, ms)',
+                example: `const date = new Date();\ndate.setSeconds(45);\nconsole.log(date.getSeconds()); // 45`,
+                parameters: 'seconds: (0-59). ms: Optional (0-999).',
+                returnValue: 'The number of milliseconds between January 1, 1970 and the updated date.'
+            },
+            {
+                name: 'setTime()',
+                category: 'date',
+                description: 'Sets the Date object to the time represented by a number of milliseconds since January 1, 1970.',
+                syntax: 'date.setTime(timeValue)',
+                example: `const date = new Date();\ndate.setTime(1577836800000); // January 1, 2020\nconsole.log(date.getFullYear()); // 2020`,
+                parameters: 'timeValue: An integer representing milliseconds since January 1, 1970.',
+                returnValue: 'The number of milliseconds between January 1, 1970 and the updated date.'
+            },
+            {
+                name: 'toDateString()',
+                category: 'date',
+                description: 'Returns the date portion of a Date object as a human-readable string.',
+                syntax: 'date.toDateString()',
+                example: `const date = new Date();\nconsole.log(date.toDateString()); // e.g. 'Wed Jul 28 2021'`,
+                parameters: 'None',
+                returnValue: 'A string representing the date portion of the given Date object.'
+            },
+            {
+                name: 'toISOString()',
+                category: 'date',
+                description: 'Returns a string in ISO format (ISO 8601 Extended Format).',
+                syntax: 'date.toISOString()',
+                example: `const date = new Date();\nconsole.log(date.toISOString()); // e.g. '2021-07-28T12:34:56.789Z'`,
+                parameters: 'None',
+                returnValue: 'A string representing the date in ISO format.'
+            },
+            {
+                name: 'toJSON()',
+                category: 'date',
+                description: 'Returns a string representing the Date using toISOString().',
+                syntax: 'date.toJSON()',
+                example: `const date = new Date();\nconsole.log(date.toJSON()); // Same as toISOString()`,
+                parameters: 'None',
+                returnValue: 'A string representing the date in ISO format.'
+            },
+            {
+                name: 'toLocaleDateString()',
+                category: 'date',
+                description: 'Returns a string with a language-sensitive representation of the date portion.',
+                syntax: 'date.toLocaleDateString(locales, options)',
+                example: `const date = new Date();\nconsole.log(date.toLocaleDateString('en-US')); // '7/28/2021'`,
+                parameters: 'locales: Optional, a string with a BCP 47 language tag. options: Optional, configuration object.',
+                returnValue: 'A string representing the date portion in a locale-specific format.'
+            },
+            {
+                name: 'toLocaleString()',
+                category: 'date',
+                description: 'Returns a string with a language-sensitive representation of the date.',
+                syntax: 'date.toLocaleString(locales, options)',
+                example: `const date = new Date();\nconsole.log(date.toLocaleString('en-US')); // '7/28/2021, 12:34:56 PM'`,
+                parameters: 'locales: Optional, a string with a BCP 47 language tag. options: Optional, configuration object.',
+                returnValue: 'A string representing the date in a locale-specific format.'
+            },
+            {
+                name: 'toLocaleTimeString()',
+                category: 'date',
+                description: 'Returns a string with a language-sensitive representation of the time portion.',
+                syntax: 'date.toLocaleTimeString(locales, options)',
+                example: `const date = new Date();\nconsole.log(date.toLocaleTimeString('en-US')); // '12:34:56 PM'`,
+                parameters: 'locales: Optional, a string with a BCP 47 language tag. options: Optional, configuration object.',
+                returnValue: 'A string representing the time portion in a locale-specific format.'
+            },
+            {
+                name: 'toString()',
+                category: 'date',
+                description: 'Returns a string representing the specified Date object.',
+                syntax: 'date.toString()',
+                example: `const date = new Date();\nconsole.log(date.toString()); // 'Wed Jul 28 2021 12:34:56 GMT+0000 (UTC)'`,
+                parameters: 'None',
+                returnValue: 'A string representing the Date object.'
+            },
+            {
+                name: 'toTimeString()',
+                category: 'date',
+                description: 'Returns the time portion of a Date object as a human-readable string.',
+                syntax: 'date.toTimeString()',
+                example: `const date = new Date();\nconsole.log(date.toTimeString()); // '12:34:56 GMT+0000 (UTC)'`,
+                parameters: 'None',
+                returnValue: 'A string representing the time portion of the given Date object.'
+            },
+            {
+                name: 'toUTCString()',
+                category: 'date',
+                description: 'Converts a date to a string using the UTC timezone.',
+                syntax: 'date.toUTCString()',
+                example: `const date = new Date();\nconsole.log(date.toUTCString()); // 'Wed, 28 Jul 2021 12:34:56 GMT'`,
+                parameters: 'None',
+                returnValue: 'A string representing the date in UTC timezone.'
+            },
+            {
+                name: 'UTC()',
+                category: 'date',
+                description: 'Accepts the same parameters as the Date constructor and returns the number of milliseconds since January 1, 1970, 00:00:00 UTC.',
+                syntax: 'Date.UTC(year, month, day, hours, minutes, seconds, ms)',
+                example: `const utcDate = Date.UTC(2020, 0, 1);\nconsole.log(new Date(utcDate)); // January 1, 2020`,
+                parameters: 'Same as Date constructor parameters, but interpreted as UTC.',
+                returnValue: 'The number of milliseconds since January 1, 1970, 00:00:00 UTC.'
+            },
+            {
+                name: 'valueOf()',
+                category: 'date',
+                description: 'Returns the primitive value of a Date object.',
+                syntax: 'date.valueOf()',
+                example: `const date = new Date();\nconsole.log(date.valueOf()); // Same as getTime()`,
+                parameters: 'None',
+                returnValue: 'The number of milliseconds since January 1, 1970, 00:00:00 UTC.'
+            },
+            
+            // Time Methods (these are actually Date methods but grouped separately for organization)
+            {
+                name: 'getHours()',
+                category: 'time',
+                description: 'Returns the hour (0-23) of the specified date.',
+                syntax: 'date.getHours()',
+                example: `const date = new Date();\nconsole.log(date.getHours()); // Current hour`,
+                parameters: 'None',
+                returnValue: 'The hour (0-23).'
+            },
+            {
+                name: 'getMinutes()',
+                category: 'time',
+                description: 'Returns the minutes (0-59) of the specified date.',
+                syntax: 'date.getMinutes()',
+                example: `const date = new Date();\nconsole.log(date.getMinutes()); // Current minutes`,
+                parameters: 'None',
+                returnValue: 'The minutes (0-59).'
+            },
+            {
+                name: 'getSeconds()',
+                category: 'time',
+                description: 'Returns the seconds (0-59) of the specified date.',
+                syntax: 'date.getSeconds()',
+                example: `const date = new Date();\nconsole.log(date.getSeconds()); // Current seconds`,
+                parameters: 'None',
+                returnValue: 'The seconds (0-59).'
+            },
+            {
+                name: 'getMilliseconds()',
+                category: 'time',
+                description: 'Returns the milliseconds (0-999) of the specified date.',
+                syntax: 'date.getMilliseconds()',
+                example: `const date = new Date();\nconsole.log(date.getMilliseconds()); // Current milliseconds`,
+                parameters: 'None',
+                returnValue: 'The milliseconds (0-999).'
+            },
+            {
+                name: 'getTime()',
+                category: 'time',
+                description: 'Returns the numeric value of the specified date as milliseconds since January 1, 1970.',
+                syntax: 'date.getTime()',
+                example: `const date = new Date();\nconsole.log(date.getTime()); // Timestamp in milliseconds`,
+                parameters: 'None',
+                returnValue: 'The number of milliseconds since January 1, 1970, 00:00:00 UTC.'
+            },
+            {
+                name: 'setHours()',
+                category: 'time',
+                description: 'Sets the hours for a specified date.',
+                syntax: 'date.setHours(hours, minutes, seconds, ms)',
+                example: `const date = new Date();\ndate.setHours(12);\nconsole.log(date.getHours()); // 12`,
+                parameters: 'hours: (0-23). minutes, seconds, ms: Optional.',
+                returnValue: 'The number of milliseconds between January 1, 1970 and the updated date.'
+            },
+            {
+                name: 'setMinutes()',
+                category: 'time',
+                description: 'Sets the minutes for a specified date.',
+                syntax: 'date.setMinutes(minutes, seconds, ms)',
+                example: `const date = new Date();\ndate.setMinutes(30);\nconsole.log(date.getMinutes()); // 30`,
+                parameters: 'minutes: (0-59). seconds, ms: Optional.',
+                returnValue: 'The number of milliseconds between January 1, 1970 and the updated date.'
+            },
+            {
+                name: 'setSeconds()',
+                category: 'time',
+                description: 'Sets the seconds for a specified date.',
+                syntax: 'date.setSeconds(seconds, ms)',
+                example: `const date = new Date();\ndate.setSeconds(45);\nconsole.log(date.getSeconds()); // 45`,
+                parameters: 'seconds: (0-59). ms: Optional (0-999).',
+                returnValue: 'The number of milliseconds between January 1, 1970 and the updated date.'
+            },
+            {
+                name: 'setMilliseconds()',
+                category: 'time',
+                description: 'Sets the milliseconds for a specified date.',
+                syntax: 'date.setMilliseconds(ms)',
+                example: `const date = new Date();\ndate.setMilliseconds(500);\nconsole.log(date.getMilliseconds()); // 500`,
+                parameters: 'ms: (0-999).',
+                returnValue: 'The number of milliseconds between January 1, 1970 and the updated date.'
+            },
+            {
+                name: 'setTime()',
+                category: 'time',
+                description: 'Sets the Date object to the time represented by a number of milliseconds since January 1, 1970.',
+                syntax: 'date.setTime(timeValue)',
+                example: `const date = new Date();\ndate.setTime(1577836800000); // January 1, 2020\nconsole.log(date.getFullYear()); // 2020`,
+                parameters: 'timeValue: An integer representing milliseconds since January 1, 1970.',
+                returnValue: 'The number of milliseconds between January 1, 1970 and the updated date.'
+            },
+            {
+                name: 'toLocaleTimeString()',
+                category: 'time',
+                description: 'Returns a string with a language-sensitive representation of the time portion.',
+                syntax: 'date.toLocaleTimeString(locales, options)',
+                example: `const date = new Date();\nconsole.log(date.toLocaleTimeString('en-US')); // '12:34:56 PM'`,
+                parameters: 'locales: Optional, a string with a BCP 47 language tag. options: Optional, configuration object.',
+                returnValue: 'A string representing the time portion in a locale-specific format.'
+            },
+            {
+                name: 'toTimeString()',
+                category: 'time',
+                description: 'Returns the time portion of a Date object as a human-readable string.',
+                syntax: 'date.toTimeString()',
+                example: `const date = new Date();\nconsole.log(date.toTimeString()); // '12:34:56 GMT+0000 (UTC)'`,
+                parameters: 'None',
+                returnValue: 'A string representing the time portion of the given Date object.'
+            }
+        ];
+
+        // Populate methods list
+        const methodsListContainer = document.getElementById('methodsList');
+        
+        allMethods.forEach(method => {
+            const methodCard = document.createElement('div');
+            methodCard.className = 'method-card p-4 border rounded-lg bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 transition duration-300 cursor-pointer';
+            methodCard.dataset.method = method.name;
+            methodCard.dataset.category = method.category;
+            
+            methodCard.innerHTML = `
+                <div class="items-start flex-wrap overflow-auto">
+                    <span class="w-8 h-8 mb-2 mt-o rounded-full flex items-center justify-center mr-3 
+                        ${method.category === 'string' ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' : ''}
+                        ${method.category === 'number' ? 'bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200' : ''}
+                        ${method.category === 'date' ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200' : ''}
+                        ${method.category === 'time' ? 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200' : ''}">
+                        ${method.category.charAt(0).toUpperCase()}
+                    </span>
+                    <div class="flex-1">
+                        <h4 class="font-semibold text-lg mb-1">${method.name}</h4>
+                        <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">${method.description}</p>
+                        <div class="bg-gray-100 dark:bg-gray-700 p-2 rounded mb-2">
+                            <code class="text-sm">${method.syntax}</code>
+                        </div>
+                        <div class="text-sm mb-2">
+                            <span class="font-medium">Parameters:</span> ${method.parameters || 'None'}
+                        </div>
+                        <div class="text-sm mb-2">
+                            <span class="font-medium">Returns:</span> ${method.returnValue}
+                        </div>
+                        <div class="bg-gray-100 dark:bg-gray-700 p-2 rounded text-sm">
+                            <div class="font-medium mb-1">Example:</div>
+                            <pre class="code-block whitespace-pre-wrap break-words w-full overflow-hidden p-4">${method.example}</pre>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            methodCard.addEventListener('click', () => {
+                codeInput.value = method.example;
+            });
+            
+            // Add to the appropriate category section
+            const categorySection = methodsListContainer.querySelector(`.category-section[data-category="${method.category}"]`);
+            if (categorySection) {
+                categorySection.querySelector('.space-y-3').appendChild(methodCard);
+            }
+        });
+
+        // Initialize with first tab content visible
+        document.querySelector('.category-section[data-category="string"]').style.display = 'block';
+    </script>
+</body>
+</html>
